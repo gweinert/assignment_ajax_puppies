@@ -5,6 +5,7 @@ var Puppies = (function(){
   function init(){
     _startRefreshListener();
     _setSubmitListener();
+    _startAdoptListener();
     _getBreeds();
     console.log("init");
   }
@@ -18,8 +19,8 @@ var Puppies = (function(){
         console.log("get breeds success");
         $breedMenu = $(".breed-menu");
         for (var i in json){
-          name = json[i].name;
-          id = json[i].id;
+          var name = json[i].name;
+          var id = json[i].id;
           var string = "<option value='" + id + "'>"+ name+"</option>";
           $breedMenu.append(string);
         }
@@ -31,6 +32,14 @@ var Puppies = (function(){
     $('.refresh-puppies').click(function(){
       console.log("refresh puppies!");
       updatePuppies();
+    });
+  }
+
+  function _startAdoptListener(){
+    $('.puppies-list').on('click', 'a', function(e){
+      console.log("adopted!");
+      console.log(e.target);
+      adoptPuppy(e.target);
     });
   }
 
@@ -60,13 +69,45 @@ var Puppies = (function(){
     });
   }
 
+  function adoptPuppy(target){
+
+    var puppyId = $(target).attr("id");
+    console.log(puppyId);
+
+    $.ajax({
+      
+      url: "https://pacific-stream-9205.herokuapp.com/puppies/"+puppyId+".json",
+
+      type: 'DELETE',
+
+      // data: JSON.stringify( puppyId),
+
+      dataType: "json",
+
+      contentType: "application/json",
+
+      headers: { 'Access-Control-Allow-Origin': 'http://localhost:3000'},
+
+
+
+      success: function(result){
+        updateFlashBar("success");
+        updatePuppies();
+      },
+
+      error: function(result){
+        updateFlashBar("failure");
+      }
+    });
+  }
+
   function updateFlashBar(result){
-    $bar = $(".flash-bar")
-    $bar.addClass(result)
+    $bar = $(".flash-bar");
+    $bar.addClass(result);
     if (result === "success"){
-      $bar.text("Successful")
+      $bar.text("Successful");
     } else {
-      $bar.text("Failure")
+      $bar.text("Failure");
     }
   }
 
@@ -101,9 +142,10 @@ var Puppies = (function(){
         var name = json[i].name;
         var breed = json[i].breed.name;
         var created = parseDate(json[i].created_at);
+        var id = json[i].id;
         console.log(Date.now() - created)
         var timeString = getTimeAgo(Date.now() - created);
-        var string = "<li>"+name+" ("+breed+"), created "+timeString+"</li>";
+        var string = "<li>"+name+" ("+breed+"), created "+timeString+" <a id='"+id+"'>adopt</a></li>";
         $list.append(string);
       }
 
@@ -115,14 +157,14 @@ var Puppies = (function(){
     }
 
     function getTimeAgo(ms){
-      var x = ms / 1000
-      seconds = Math.floor(x % 60)
-      x /= 60
-      minutes =  Math.floor(x % 60)
-      x /= 60
-      hours =  Math.floor(x % 24)
-      x /= 24
-      days =  Math.floor(x)
+      var x = ms / 1000;
+      seconds = Math.floor(x % 60);
+      x /= 60;
+      minutes =  Math.floor(x % 60);
+      x /= 60;
+      hours =  Math.floor(x % 24);
+      x /= 24;
+      days =  Math.floor(x);
       return days + " days " + hours + " hours " + minutes + " minutes ago.";
     }
 
