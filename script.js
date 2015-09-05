@@ -4,7 +4,27 @@ var Puppies = (function(){
 
   function init(){
     _startRefreshListener();
+    _setSubmitListener();
+    _getBreeds();
     console.log("init");
+  }
+
+  function _getBreeds(){
+    object = $.ajax({
+      url: "https://pacific-stream-9205.herokuapp.com/breeds.json",
+      type: "GET",
+        success: function( json ){
+
+        console.log("get breeds success");
+        $breedMenu = $(".breed-menu");
+        for (var i in json){
+          name = json[i].name;
+          id = json[i].id;
+          var string = "<option value='" + id + "'>"+ name+"</option>";
+          $breedMenu.append(string);
+        }
+      },
+    });
   }
 
   function _startRefreshListener(){
@@ -14,18 +34,51 @@ var Puppies = (function(){
     });
   }
 
+  function _setSubmitListener(){
+    $(".register").click(function(){
+      console.log("add puppy!");
+      addPuppy();
+    });
+  }
+
+  function addPuppy(){
+    var puppyName = $("#puppy-name").val();
+    var puppyBreed = $("#breed-menu").val();
+    $.ajax({
+      url: "https://pacific-stream-9205.herokuapp.com/puppies.json",
+      type: "POST",
+      data: JSON.stringify({name: puppyName, breed_id: puppyBreed}),
+      success: function(){
+        console.log("successful post");
+        updateFlashBar("success");
+        updatePuppies();},
+      fail: function(){ console.log("fail post");},
+      complete: function(){ console.log("complete post");},
+      dataType: "json",
+      contentType: "application/json",
+      headers: { 'Access-Control-Allow-Origin': 'http://localhost:3000'},
+    });
+  }
+
+  function updateFlashBar(result){
+    $bar = $(".flash-bar")
+    $bar.addClass(result)
+    if (result === "success"){
+      $bar.text("Successful")
+    } else {
+      $bar.text("Failure")
+    }
+  }
+
   function updatePuppies(){
 
+
     $.ajax({
-      
       url: "https://pacific-stream-9205.herokuapp.com/puppies.json",
-
       type: "GET",
-
       success: function( json ){
         console.log("success");
         buildPuppiesList( json );
-      
       },
 
       error: function( xhr, status, errorThrown ){
@@ -44,32 +97,35 @@ var Puppies = (function(){
       // console.log(json);
       $list = $(".puppies-list");
       $list.empty();
-      for( var i in json ){
+      for( var i = json.length - 1; i >= 0; i-- ){
         var name = json[i].name;
         var breed = json[i].breed.name;
         var created = parseDate(json[i].created_at);
-        var timeString = getTimeAgo(created);
+        console.log(Date.now() - created)
+        var timeString = getTimeAgo(Date.now() - created);
         var string = "<li>"+name+" ("+breed+"), created "+timeString+"</li>";
         $list.append(string);
       }
-      
+
 
     }
 
     function parseDate(text) {
-      return new Date(Date.parse(text.replace(/( +)/, ' UTC$1')));
+      return new Date(Date.parse(text.replace(/( +)/)));
     }
 
-    function getTimeAgo(date){
-      var str = '';
-      str += date.getUTCDate()-1 + " days, ";
-      str += date.getUTCHours() + " hours, ";
-      str += date.getUTCMinutes() + " minutes, ";
-      str += date.getUTCSeconds() + " seconds ago";
-      console.log(str);
-      return str;
+    function getTimeAgo(ms){
+      var x = ms / 1000
+      seconds = Math.floor(x % 60)
+      x /= 60
+      minutes =  Math.floor(x % 60)
+      x /= 60
+      hours =  Math.floor(x % 24)
+      x /= 24
+      days =  Math.floor(x)
+      return days + " days " + hours + " hours " + minutes + " minutes ago.";
     }
-  
+
 
   }
 
@@ -85,4 +141,3 @@ $(document).ready(function(){
   console.log("sdhfjsdhf");
   Puppies.init();
 });
-

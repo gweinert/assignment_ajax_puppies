@@ -13,10 +13,6 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- FONT
-  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-
   <!-- CSS
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <link rel="stylesheet" href="css/normalize.css">
@@ -27,6 +23,21 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script type="text/javascript" src ="script.js"></script>
 
+  <style media="screen">
+    .flash-bar {
+      text-align: center;
+      height: 25px;
+      }
+    .failure {
+        background-color: orange;
+    }
+
+    .success{
+      background-color: #ABCDEF
+    }
+
+  </style>
+
 </head>
 <body>
 
@@ -34,26 +45,23 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
   <div class="container">
     <div class="row flash-bar">
-        <p>Test</p>
+
     </div>
     <div class="row">
       <h1>The AJAX Puppy Shelter</h1>
       <h4>Register a new puppy</h4>
-        
+
       <form>
         <div class="row">
           <div class="six columns">
             <label for="Name">Name</label>
-            <input class="u-full-width" type="text" placeholder="Name" id="exampleEmailInput">
+            <input class="u-full-width" type="text" placeholder="Name" id="puppy-name">
             <label for="Breed">Breed</label>
-            <select class="u-full-width" id="exampleRecipientInput">
-              <option value="Option 1">Questions</option>
-              <option value="Option 2">Admiration</option>
-              <option value="Option 3">Can I get your number?</option>
+            <select class="u-full-width breed-menu" id="breed-menu">
             </select>
           </div>
         </div>
-        <input class="button-primary" type="submit" value="Register Puppy">
+        <input class="button-primary register" type="submit" value="Register Puppy">
       </form>
 
       <h4>Our puppies:</h4>
